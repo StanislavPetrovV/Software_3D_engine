@@ -15,6 +15,10 @@ class Camera:
         self.moving_speed = 0.3
         self.rotation_speed = 0.015
 
+        self.anglePitch = 0
+        self.angleYaw = 0
+        self.angleRoll = 0
+
     def control(self):
         key = pg.key.get_pressed()
         if key[pg.K_a]:
@@ -40,16 +44,27 @@ class Camera:
             self.camera_pitch(self.rotation_speed)
 
     def camera_yaw(self, angle):
-        rotate = rotate_y(angle)
+        self.angleYaw += angle
+
+    def camera_pitch(self, angle):
+        self.anglePitch += angle
+
+    def axiiIdentity(self):
+        self.forward = np.array([0, 0, 1, 1])
+        self.up = np.array([0, 1, 0, 1])
+        self.right = np.array([1, 0, 0, 1])
+
+    def camera_update_axii(self):
+        # rotate = rotate_y(self.angleYaw) @ rotate_x(self.anglePitch)
+        rotate = rotate_x(self.anglePitch) @ rotate_y(self.angleYaw)  # this concatenation gives right visual
+        self.axiiIdentity()
         self.forward = self.forward @ rotate
         self.right = self.right @ rotate
         self.up = self.up @ rotate
 
-    def camera_pitch(self, angle):
-        rotate = rotate_x(angle)
-        self.forward = self.forward @ rotate
-        self.right = self.right @ rotate
-        self.up = self.up @ rotate
+    def camera_matrix(self):
+        self.camera_update_axii()
+        return self.translate_matrix() @ self.rotate_matrix()
 
     def translate_matrix(self):
         x, y, z, w = self.position
@@ -70,6 +85,3 @@ class Camera:
             [rz, uz, fz, 0],
             [0, 0, 0, 1]
         ])
-
-    def camera_matrix(self):
-        return self.translate_matrix() @ self.rotate_matrix()
