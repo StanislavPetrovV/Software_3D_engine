@@ -31,6 +31,8 @@ class Object3D:
     def screen_projection(self):
         vertices = self.vertices @ self.render.camera.camera_matrix()
         vertices = vertices @ self.render.projection.projection_matrix
+        # что-бы отсечь точки за экраном
+        vertices[vertices[:, 2] <= 0] = 0
         vertices /= vertices[:, -1].reshape(-1, 1)
         vertices[(vertices > 2) | (vertices < -2)] = 0
         vertices = vertices @ self.render.projection.to_screen_matrix
