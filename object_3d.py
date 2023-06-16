@@ -11,8 +11,8 @@ def any_func(arr, a, b):
 class Object3D:
     def __init__(self, render, vertices='', faces=''):
         self.render = render
-        self.vertices = np.array([np.array(v) for v in vertices])
-        self.faces = np.array([np.array(face) for face in faces])
+        self.vertices = np.array(vertices)
+        self.faces = faces
         self.translate([0.0001, 0.0001, 0.0001])
 
         self.font = pg.font.SysFont('Arial', 30, bold=True)
